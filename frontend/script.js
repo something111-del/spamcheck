@@ -1,5 +1,7 @@
 const API_URL = ""; // Use relative path for production
 
+console.log("SpamCheck Frontend v1.2 loaded"); // Version check
+
 async function predict() {
     let text = document.getElementById("smsInput").value.trim();
     if (!text) return alert("Enter a message!");
@@ -11,13 +13,14 @@ async function predict() {
             body: JSON.stringify({ text })
         });
 
+        const responseText = await res.text();
         let data;
-        const contentType = res.headers.get("content-type");
-        if (contentType && contentType.indexOf("application/json") !== -1) {
-            data = await res.json();
-        } else {
-            const text = await res.text();
-            throw new Error(`Server returned non-JSON response: ${res.status} ${res.statusText}\n${text.substring(0, 100)}...`);
+
+        try {
+            data = JSON.parse(responseText);
+        } catch (e) {
+            // If JSON parse fails, show the raw text (likely an HTML error page)
+            throw new Error(`Server returned invalid JSON. Status: ${res.status}. Response: ${responseText.substring(0, 150)}...`);
         }
 
         let result = document.getElementById("result");
@@ -40,6 +43,7 @@ async function predict() {
             result.innerHTML = "✔ HAM (Not Spam)";
         }
     } catch (err) {
-        alert("Failed to connect to server: " + err);
+        alert("Debug Error: " + err.message);
+        console.error("Full error:", err);
     }
 }
