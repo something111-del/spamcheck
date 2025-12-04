@@ -3,22 +3,12 @@ from flask_cors import CORS
 import joblib
 import os
 
-# Ensure we look for models relative to the backend directory if run from there
-# or handle the path correctly.
-# User provided: MODEL_PATH = os.path.join("models", "spam_model.joblib")
-# This assumes running from backend/
-MODEL_PATH = os.path.join("models", "spam_model.joblib")
-
-app = Flask(__name__)
-CORS(app)
+# Robust model path resolution
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "..", "models", "spam_model.joblib")
 
 if not os.path.exists(MODEL_PATH):
-    # Fallback for robustness if run from src/
-    if os.path.exists(os.path.join("..", "models", "spam_model.joblib")):
-        MODEL_PATH = os.path.join("..", "models", "spam_model.joblib")
-    else:
-        # We'll just print a warning instead of raising error immediately to let app start
-        print("Warning: Model not found at", MODEL_PATH)
+    print(f"Warning: Model not found at {MODEL_PATH}")
 
 try:
     model = joblib.load(MODEL_PATH)
