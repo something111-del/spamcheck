@@ -31,8 +31,12 @@ app = Flask(__name__)
 CORS(app)
 
 model = None
+
+MODEL_LOAD_ERROR = None
+
 if not os.path.exists(MODEL_PATH):
-    print(f"ERROR: Model not found at {MODEL_PATH}")
+    MODEL_LOAD_ERROR = f"File not found at {MODEL_PATH}"
+    print(f"ERROR: {MODEL_LOAD_ERROR}")
     # List contents of parent directory to help debug
     parent_dir = os.path.dirname(os.path.dirname(MODEL_PATH))
     if os.path.exists(parent_dir):
@@ -43,12 +47,40 @@ else:
         model = joblib.load(MODEL_PATH)
         print("Model loaded successfully!")
     except Exception as e:
-        print(f"CRITICAL ERROR loading model: {e}")
+        MODEL_LOAD_ERROR = f"Exception loading model: {str(e)}"
+        print(f"CRITICAL ERROR: {MODEL_LOAD_ERROR}")
         traceback.print_exc()
 
 @app.route("/health")
 def health():
-    return jsonify({"status": "ok"}), 200
+    return jsonify({
+        "status": "ok", 
+        "model_loaded": model is not None,
+        "python_version": sys.version
+    }), 200
+
+@app.route("/debug-files")
+def debug_files():
+    """Helper to list files in Vercel environment"""
+    try:
+        base = os.path.dirname(os.path.abspath(__file__))
+        parent = os.path.dirname(base)
+        
+        # Walk through the backend directory
+        files_list = []
+        for root, dirs, files in os.walk(parent):
+            for name in files:
+                files_list.append(os.path.join(root, name))
+        
+        return jsonify({
+            "cwd": os.getcwd(),
+            "base_dir": base,
+            "model_path": MODEL_PATH,
+            "exists": os.path.exists(MODEL_PATH),
+            "all_files": files_list[:50] # Limit output
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/")
 def home():
@@ -62,10 +94,13 @@ def predict():
 
     text = data["text"]
     if model:
-        pred = model.predict([text])[0]
-        return jsonify({"prediction": pred}), 200
+        try:
+            pred = model.predict([text])[0]
+            return jsonify({"prediction": pred}), 200
+        except Exception as e:
+            return jsonify({"error": f"Prediction failed: {str(e)}"}), 500
     else:
-        return jsonify({"error": "Model not loaded"}), 500
+        return jsonify({"error": f"Model not loaded. Details: {MODEL_LOAD_ERROR}"}), 500
 
 @app.route("/batch-predict", methods=["POST"])
 def batch_predict():
