@@ -9,7 +9,7 @@ import joblib
 
 # Paths relative to the project root (backend/)
 DATA_PATH = os.path.join("data", "spam.csv")
-MODEL_DIR = os.path.join("models")
+MODEL_DIR = os.path.join("src")
 MODEL_PATH = os.path.join(MODEL_DIR, "spam_model.joblib")
 
 def load_dataset():

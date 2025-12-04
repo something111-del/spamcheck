@@ -23,7 +23,8 @@ except ImportError as e:
 
 # Robust model path resolution
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, "..", "models", "spam_model.joblib")
+# Model is now located in the same directory as api.py for easier Vercel bundling
+MODEL_PATH = os.path.join(BASE_DIR, "spam_model.joblib")
 
 print(f"Computed MODEL_PATH: {MODEL_PATH}")
 
@@ -37,10 +38,8 @@ MODEL_LOAD_ERROR = None
 if not os.path.exists(MODEL_PATH):
     MODEL_LOAD_ERROR = f"File not found at {MODEL_PATH}"
     print(f"ERROR: {MODEL_LOAD_ERROR}")
-    # List contents of parent directory to help debug
-    parent_dir = os.path.dirname(os.path.dirname(MODEL_PATH))
-    if os.path.exists(parent_dir):
-         print(f"Contents of {parent_dir}: {os.listdir(parent_dir)}")
+    # List contents of current directory to help debug
+    print(f"Contents of {BASE_DIR}: {os.listdir(BASE_DIR)}")
 else:
     try:
         print(f"Attempting to load model from {MODEL_PATH}...")
