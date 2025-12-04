@@ -11,8 +11,20 @@ async function predict() {
             body: JSON.stringify({ text })
         });
 
-        let data = await res.json();
+        let data;
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+            data = await res.json();
+        } else {
+            const text = await res.text();
+            throw new Error(`Server returned non-JSON response: ${res.status} ${res.statusText}\n${text.substring(0, 100)}...`);
+        }
+
         let result = document.getElementById("result");
+
+        if (!res.ok) {
+            throw new Error(data.error || `Server error: ${res.status}`);
+        }
 
         if (data.error) {
             result.style.color = "orange";
