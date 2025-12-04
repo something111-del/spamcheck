@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:8000";  // Updated for local testing as per instructions
+const API_URL = ""; // Use relative path for production
 
 async function predict() {
     let text = document.getElementById("smsInput").value.trim();
