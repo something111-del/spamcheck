@@ -2,13 +2,13 @@
 
 SpamCheck is a full-stack machine learning application designed to classify SMS messages as either "Spam" or "Ham" (safe). It features a Flask REST API backend and a modern, responsive frontend.
 
-## 🚀 Key Features
+##  Key Features
 - **Real-time Prediction**: Instantly classify SMS messages.
 - **Batch Processing**: Support for analyzing multiple messages at once.
 - **Robust Model**: Tuned machine learning model for high accuracy.
 - **Dockerized**: Ready for containerized deployment.
 
-## 🧠 Model Improvements & Efficiency
+##  Model Improvements & Efficiency
 We significantly enhanced the initial model to better detect subtle spam patterns, such as "coupons", "gift cards", and promotional offers.
 
 ### Evolution
@@ -21,12 +21,12 @@ We significantly enhanced the initial model to better detect subtle spam pattern
 ### Results
 These changes led to a measurable increase in **F1-Score** and **Recall** for the "Spam" class. The model is now much more efficient at catching previously missed spam messages without increasing false positives.
 
-## 🛠️ Tech Stack
+##  Tech Stack
 -   **Backend**: Python, Flask, Scikit-learn, Pandas, Joblib
 -   **Frontend**: HTML5, CSS3, JavaScript (Fetch API)
 -   **Deployment**: Docker, Gunicorn
 
-## 📦 Setup & Installation
+## Setup & Installation
 
 ### Prerequisites
 -   Python 3.10+
